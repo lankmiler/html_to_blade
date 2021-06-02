@@ -30,9 +30,9 @@ for root, dirs, files in os.walk('./output/'):
     for d in dirs:
         shutil.rmtree(os.path.join(root, d))
 
-
 for root, dirs, files in os.walk(directory):
 	for f in files:
+		
 		if 'html' in f:
 			with open(root + '/' + f, 'r') as current_html:
 				filebasename = f.rsplit('.')[0]
@@ -45,7 +45,9 @@ for root, dirs, files in os.walk(directory):
 				all_content = BeautifulSoup(current_html.read(), 'html.parser')
 				title = all_content.find('title').text
 				if all_args.contentid:
-					content = all_content.find("div", {"id": all_args.contentclass})
+					content = all_content.find("div", {"id": all_args.contentid})
+					if content is None:
+						content = all_content.find("div", {"class": all_args.contentid})
 					divsoup = BeautifulSoup(str(content), 'html.parser')
 					for elm in content.find_next_siblings():
 					    elm.extract()
@@ -63,19 +65,17 @@ for root, dirs, files in os.walk(directory):
 					f.close()
 					
 
-					if not layout:
-						layout = all_content
-						body = layout.find('body')
-						body.append("@yield('content')")
-						layout_str = layout.prettify()
+					# if not layout:
+					# 	layout = all_content
+					# 	body = layout.find('body')
+					# 	body.append("@yield('content')")
+					# 	layout_str = layout.prettify()
 					
-						if all_args.extra:
-							pos = layout_str.find('</body>')
-							new_layout = layout_str[:pos] + all_args.extra + layout_str[pos:]
-							layout = new_layout
+					# 	if all_args.extra:
+					# 		pos = layout_str.find('</body>')
+					# 		new_layout = layout_str[:pos] + all_args.extra + layout_str[pos:]
+					# 		layout = new_layout
 
-							f = open("./output/front.blade", "a")
-							f.write(str(layout))
-							f.close()
-
-					sys.exit(0)
+					# 		f = open("./output/front.blade", "a")
+					# 		f.write(str(layout))
+					# 		f.close()
